@@ -1,2 +1,2 @@
-# Instagram Ui Clone
+# instagram_ui_clone
  
