@@ -55,6 +55,8 @@ flutter:
     - assets/nav_rels_ic.png
     - assets/nav_search_ic.png
     - assets/nav_shop_ic.png
+    - assets/ic_nav_my_feed.png
+    - assets/ic_nav_my_profile.png
 
 
         

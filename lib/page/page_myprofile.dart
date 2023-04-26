@@ -1,4 +1,6 @@
+import 'package:bottom_bar_matu/utils/app_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:instagram_ui_clone/util/color_app.dart';
 import 'package:instagram_ui_clone/util/font_size.dart';
 
@@ -11,6 +13,7 @@ class PageMyProfile extends StatelessWidget {
     - assets/nav_search_ic.png
     - assets/nav_shop_ic.png
   */
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -51,7 +54,7 @@ class PageMyProfile extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            "3",
+                            "${myFeed.length}",
                             style: TextStyle(
                                 fontSize: FontSize.sizeUsername - 10,
                                 fontWeight: FontWeight.bold),
@@ -70,7 +73,7 @@ class PageMyProfile extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            "2,842",
+                            "540k",
                             style: TextStyle(
                                 fontSize: FontSize.sizeUsername - 10,
                                 fontWeight: FontWeight.bold),
@@ -223,10 +226,15 @@ Focused Area🎯
               ),
               SizedBox(
                 height: 100,
-                child: ListView(
-                  children: [cardProfileInstagram("cardProfileInstagram")],
+                child: ListView.builder(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return cardProfileInstagram(index.toString(), "Text Story");
+                  },
                 ),
-              )
+              ),
+              componentBottom()
             ],
           ),
         ),
@@ -234,30 +242,91 @@ Focused Area🎯
     );
   }
 
-  Widget cardProfileInstagram(String imageUri) {
-    return Stack(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [Color(0xFFEE0979), Color(0xFFFF6A00)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+  String imageBaseFeed = "https://picsum.photos/id/";
+  String reso = "1080/1080";
+
+  Widget cardProfileInstagram(String ImageUri, String textStory) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Color(0xFFEE0979), Color(0xFFFF6A00)],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: ClipOval(
+                  child: Center(
+                      child: Image.network(
+                          "https://i.pravatar.cc/150?img=" + ImageUri))),
             ),
           ),
+          Center(
+              child: Text(
+            " Post ${ImageUri.toInt() + 1}",
+            textAlign: TextAlign.center,
+          )),
+        ],
+      ),
+    );
+  }
+
+  List<Map> myFeed = List.generate(
+      100,
+      (index) => {
+            "id": index + 100,
+          });
+  Widget componentBottom() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ImageIcon(
+              AssetImage("assets/ic_nav_my_feed.png"),
+              size: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: ImageIcon(
+                AssetImage("assets/nav_rels_ic.png"),
+                size: 30,
+                color: Colors.grey,
+              ),
+            ),
+            ImageIcon(
+              AssetImage("assets/ic_nav_my_profile.png"),
+              size: 30,
+              color: Colors.grey,
+            )
+          ],
         ),
-        Positioned(
-          top: 3,
-          left: 3,
-          child: CircleAvatar(
-            radius: 27,
-            backgroundImage:
-                NetworkImage("https://picsum.photos/id/237/200/300"),
-          ),
+        SizedBox(
+          height: 10,
         ),
+        GridView.builder(
+          physics: PageScrollPhysics(),
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
+          itemBuilder: (context, index) {
+            return Container(
+              child: Image.network(
+                  imageBaseFeed + "/" + index.toString() + "/" + reso),
+            );
+          },
+          itemCount: myFeed.length,
+        )
       ],
     );
   }
