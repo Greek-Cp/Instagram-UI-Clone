@@ -1,11 +1,23 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bottom_bar_matu/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:instagram_ui_clone/model/stastictic_account.dart';
 import 'package:instagram_ui_clone/util/color_app.dart';
 import 'package:instagram_ui_clone/util/font_size.dart';
+import 'package:provider/provider.dart';
 
-class PageMyProfile extends StatelessWidget {
+class PageMyProfile extends StatefulWidget {
   static String? routeName = "/PageMyProfile";
+
+  @override
+  State<PageMyProfile> createState() => _PageMyProfileState();
+}
+
+class _PageMyProfileState extends State<PageMyProfile> {
   /*
     - assets/nav_home_ic.png
     - assets/nav_rels_ic.png
@@ -13,10 +25,20 @@ class PageMyProfile extends StatelessWidget {
     - assets/nav_search_ic.png
     - assets/nav_shop_ic.png
   */
+  @override
+  void initState() {
+    AwesomeNotifications().isNotificationAllowed().then((value) => {
+          if (!value)
+            {AwesomeNotifications().requestPermissionToSendNotifications()}
+        });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    int fol = 0;
+    final provider = Provider.of<Account>(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -30,11 +52,25 @@ class PageMyProfile extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text(
-                    "yanuar_tr",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: FontSize.sizeUsername),
+                  GestureDetector(
+                    onTap: () {
+                      provider.setFollower();
+                      provider.randomNotification();
+                    },
+                    child: Text(
+                      "yanuar_tr",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSize.sizeUsername),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Image.asset(
+                    "assets/verified.png",
+                    width: 25,
+                    height: 25,
                   ),
                   Expanded(child: Container()),
                   ImageIcon(AssetImage("assets/icon_add_post.png")),
@@ -73,7 +109,7 @@ class PageMyProfile extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            "540k",
+                            "${provider.getFollower()}",
                             style: TextStyle(
                                 fontSize: FontSize.sizeUsername - 10,
                                 fontWeight: FontWeight.bold),
@@ -128,7 +164,7 @@ class PageMyProfile extends StatelessWidget {
                     fontSize: FontSize.sizeSubUsrname),
               ),
               Text(""" 
-Student Computer Science At Polytechnic State Jember
+Student Computer Science
 Focused Area🎯
 • Android Native/Hybrid(Flutter,Java,Kotlin)
 • Backend Engineer(PHP,Javascript)
@@ -136,15 +172,15 @@ Focused Area🎯
                   style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: FontSize.sizeSubUsrname)),
-              Row(
-                children: [
-                  Transform.rotate(angle: 40, child: Icon(Icons.link)),
-                  Text("letscoding.my.id/cv + 2",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: FontSize.sizeSubUsrname)),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Transform.rotate(angle: 40, child: Icon(Icons.link)),
+              //     Text("letscoding.my.id/cv + 2",
+              //         style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: FontSize.sizeSubUsrname)),
+              //   ],
+              // ),
               SizedBox(
                 width: double.infinity,
                 child: Expanded(
@@ -165,7 +201,7 @@ Focused Area🎯
                                   fontSize: FontSize.sizeSubUsrname),
                             ),
                             Text(
-                              "1.3k accounts reached in the last 30 days.",
+                              "596k accounts reached in the last 30 days.",
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                   color: ColorApp.colorDescription,
@@ -229,6 +265,7 @@ Focused Area🎯
                 child: ListView.builder(
                   physics: AlwaysScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
+                  itemCount: myFeed.length,
                   itemBuilder: (context, index) {
                     return cardProfileInstagram(index.toString(), "Text Story");
                   },
@@ -243,6 +280,7 @@ Focused Area🎯
   }
 
   String imageBaseFeed = "https://picsum.photos/id/";
+
   String reso = "1080/1080";
 
   Widget cardProfileInstagram(String ImageUri, String textStory) {
@@ -282,8 +320,9 @@ Focused Area🎯
   List<Map> myFeed = List.generate(
       100,
       (index) => {
-            "id": index + 100,
+            "id": Random().nextInt(25) + 1,
           });
+
   Widget componentBottom() {
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -321,8 +360,11 @@ Focused Area🎯
               crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
           itemBuilder: (context, index) {
             return Container(
-              child: Image.network(
-                  imageBaseFeed + "/" + index.toString() + "/" + reso),
+              child: Image.network(imageBaseFeed +
+                  "/" +
+                  myFeed[index]['id'].toString() +
+                  "/" +
+                  reso),
             );
           },
           itemCount: myFeed.length,
